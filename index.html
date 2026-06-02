@@ -3,92 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixSquad Pro</title>
+    <title>FixSquad CyberPro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #111111;
+            --bg-color: #050505;
+            --card-bg: #121214;
+            --card-bg-selected: rgba(255, 149, 0, 0.07);
             --primary-orange: #ff9500;
+            --neon-glow: #ff9500;
+            --neon-green: #30d158;
             --text-color: #ffffff;
-            --text-muted: #777777;
-            --border-color: #222222;
+            --text-muted: #6e6e73;
+            --border-color: #1c1c1e;
         }
 
         body {
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 10px;
-            padding-bottom: 110px;
+            padding: 15px;
+            padding-bottom: 130px;
             overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        /* Анимация фона */
+        /* Живой фон */
         .background-animation {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
         }
         .floating-icon {
-            position: absolute; bottom: -50px; opacity: 0.08;
-            animation: floatUp 10s linear infinite;
+            position: absolute; bottom: -50px; opacity: 0.05;
+            animation: floatUp 12s linear infinite; font-size: 20px;
         }
         @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.12; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+            30% { opacity: 0.12; }
+            80% { opacity: 0.12; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        .container { position: relative; z-index: 2; max-width: 500px; margin: 0 auto; }
+        .container { position: relative; z-index: 2; max-width: 480px; margin: 0 auto; }
 
-        /* Переключатель языков */
-        .lang-picker {
-            display: flex; justify-content: center; gap: 12px; margin-bottom: 15px;
-            background: var(--card-bg); padding: 8px; border-radius: 30px; border: 1px solid var(--border-color);
+        /* Кастомный iOS-style переключатель языков */
+        .lang-container {
+            display: flex; background: #16161a; padding: 4px; border-radius: 14px;
+            border: 1px solid var(--border-color); margin-bottom: 20px; position: relative;
         }
         .lang-btn {
-            font-size: 1.4em; cursor: pointer; filter: grayscale(60%); transition: transform 0.2s, filter 0.2s;
+            flex: 1; text-align: center; padding: 8px 0; font-size: 1.1em; cursor: pointer;
+            z-index: 2; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); filter: grayscale(50%);
         }
-        .lang-btn.active { filter: grayscale(0%); transform: scale(1.2); }
+        .lang-btn.active { filter: grayscale(0%); transform: scale(1.1); font-weight: bold; }
+        
+        /* Ползунок выбора языка */
+        .lang-slider {
+            position: absolute; top: 4px; bottom: 4px; width: calc(25% - 4px);
+            background: var(--primary-orange); border-radius: 11px; z-index: 1;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(255, 149, 0, 0.4);
+        }
 
         header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--primary-orange); margin: 0; font-size: 1.7em; letter-spacing: 2px; text-transform: uppercase; }
-        .subtitle { color: var(--text-muted); font-size: 0.8em; text-transform: uppercase; margin-top: 5px; }
-
-        .category-title {
-            font-size: 0.8em; color: var(--primary-orange); margin: 20px 0 10px 5px;
-            font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center;
+        h1 { 
+            font-size: 1.9em; font-weight: 900; letter-spacing: 3px; margin: 0;
+            background: linear-gradient(135deg, #ffffff 30%, #ff9500 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .category-title::after { content: ""; flex: 1; height: 1px; background: var(--border-color); margin-left: 10px; }
+        .subtitle { color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; margin-top: 6px; letter-spacing: 1px; }
 
-        .service-list { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        /* Виджет геймификации / Полоса прогресса */
+        .bonus-widget {
+            background: var(--card-bg); border-radius: 16px; padding: 12px 15px;
+            border: 1px solid var(--border-color); margin-bottom: 20px;
+        }
+        .bonus-text { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .progress-bar-bg { background: #1c1c1e; height: 6px; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { 
+            width: 0%; height: 100%; background: var(--primary-orange); 
+            transition: width 0.4s ease, background-color 0.4s ease; 
+            box-shadow: 0 0 8px var(--neon-glow);
+        }
+
+        /* Стили Категорий и Списков */
+        .category-title {
+            font-size: 0.75em; color: var(--primary-orange); margin: 25px 0 10px 5px;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+            display: flex; align-items: center;
+        }
+        .category-title::after { content: ""; flex: 1; height: 1px; background: #1c1c1e; margin-left: 12px; }
+
+        .service-list { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
+        
         .service-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer;
+            padding: 14px 16px; border-bottom: 1px solid var(--border-color);
+            cursor: pointer; transition: all 0.25s ease; position: relative;
         }
         .service-item:last-child { border-bottom: none; }
-        .service-info { display: flex; flex-direction: column; }
-        .service-name { font-size: 0.95em; font-weight: 500; }
-        .service-price { color: var(--text-muted); font-size: 0.8em; margin-top: 2px; }
         
-        .service-item.selected { background: rgba(255, 149, 0, 0.08); }
-        .service-item.selected .service-name { color: var(--primary-orange); }
-        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-orange); pointer-events: none; }
+        .service-info { display: flex; flex-direction: column; z-index: 2; }
+        .service-name { font-size: 0.95em; font-weight: 600; transition: color 0.2s; }
+        .service-price { color: var(--text-muted); font-size: 0.8em; margin-top: 3px; font-weight: 500; transition: color 0.2s; }
+        
+        /* Эффект Неонового Выделения при клике */
+        .service-item.selected { 
+            background: var(--card-bg-selected); 
+            box-shadow: inset 0 0 15px rgba(255, 149, 0, 0.03);
+        }
+        .service-item.selected::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--primary-orange);
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+        .service-item.selected .service-name { color: #fff; }
+        .service-item.selected .service-price { color: var(--primary-orange); }
 
+        /* Скрываем дефолтный чекбокс, делаем кастомную неоновую точку */
+        .checkbox-custom {
+            width: 16px; height: 16px; border: 2px solid #2c2c2e; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2;
+        }
+        .service-item.selected .checkbox-custom {
+            border-color: var(--primary-orange); background: var(--primary-orange);
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        /* Премиальная нижняя панель (Matte Glass) */
         .bottom-panel {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border-color); padding: 15px; box-sizing: border-box; z-index: 10;
+            background: rgba(10, 10, 12, 0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color); padding: 15px 20px 25px 20px; box-sizing: border-box; z-index: 10;
         }
-        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
-        .total-label { font-size: 0.9em; color: var(--text-muted); }
-        .total-amount { color: var(--primary-orange); font-weight: bold; font-size: 1.2em; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .total-label { font-size: 0.85em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .total-container { text-align: right; }
+        .old-price { color: #555; text-decoration: line-through; font-size: 0.85em; margin-right: 5px; display: none; }
+        .total-amount { color: #fff; font-weight: 800; font-size: 1.4em; }
+
+        /* Пульсирующая неоновая кнопка */
         .btn-order {
-            width: 100%; background: var(--primary-orange); color: #000; border: none; padding: 14px;
-            border-radius: 10px; font-weight: bold; font-size: 1em; text-transform: uppercase; cursor: pointer;
+            width: 100%; background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%); color: #000;
+            border: none; padding: 15px; border-radius: 14px; font-weight: 800; font-size: 1em;
+            text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2);
         }
-        .btn-order:disabled { background: #222; color: #555; cursor: not-allowed; }
+        .btn-order:not(:disabled):span { display: inline-block; animation: pulse 2s infinite; }
+        .btn-order:disabled { background: #1c1c1e; color: #444; box-shadow: none; cursor: not-allowed; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -96,11 +165,13 @@
     <div class="background-animation" id="bg-animation"></div>
 
     <div class="container">
-        <div class="lang-picker">
-            <span class="lang-btn" onclick="setLanguage('en')" id="btn-en">🇬🇧</span>
-            <span class="lang-btn" onclick="setLanguage('ru')" id="btn-ru">🇷🇺</span>
-            <span class="lang-btn" onclick="setLanguage('uk')" id="btn-uk">🇺🇦</span>
-            <span class="lang-btn" onclick="setLanguage('nl')" id="btn-nl">🇳🇱</span>
+        <!-- iOS слайдер выбора языков -->
+        <div class="lang-container">
+            <div class="lang-slider" id="lang-slider"></div>
+            <div class="lang-btn active" onclick="setLanguage('en', 0)" id="btn-en">🇬🇧</div>
+            <div class="lang-btn" onclick="setLanguage('ru', 1)" id="btn-ru">🇷🇺</div>
+            <div class="lang-btn" onclick="setLanguage('uk', 2)" id="btn-uk">🇺🇦</div>
+            <div class="lang-btn" onclick="setLanguage('nl', 3)" id="btn-nl">🇳🇱</div>
         </div>
 
         <header>
@@ -108,13 +179,29 @@
             <div class="subtitle" id="sub-title">Premium Repair Service • Eindhoven</div>
         </header>
 
+        <!-- Индикатор прогресса бонусов -->
+        <div class="bonus-widget">
+            <div class="bonus-text">
+                <span id="bonus-status">Select services</span>
+                <span id="bonus-percent" style="color: var(--primary-orange);">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Контент наполняется динамически -->
         <div id="content-area"></div>
     </div>
 
+    <!-- Размытая нижняя панель -->
     <div class="bottom-panel">
         <div class="total-row">
             <span class="total-label" id="total-label">Total Estimate:</span>
-            <span class="total-amount" id="total-display">€0</span>
+            <div class="total-container">
+                <span class="old-price" id="old-price">€0</span>
+                <span class="total-amount" id="total-display">€0</span>
+            </div>
         </div>
         <button class="btn-order" id="order-btn" disabled onclick="sendOrder()">Place Order</button>
     </div>
@@ -122,53 +209,52 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#000000');
+        tg.setHeaderColor('#050505');
 
         let currentLang = 'en';
         let total = 0;
-        let selectedServices = [];
+        let finalPrice = 0;
+        let selectedKeys = []; // Храним ключи выбранных услуг, чтобы языки переключались на лету
 
-        // База данных переводов
         const translations = {
             en: {
                 sub: "Premium Repair Service • Eindhoven", totalLabel: "Total Estimate:", button: "Place Order", free: "Free", from: "from",
-                cats: { smart: "Smartphones", lap: "Laptops & MacBooks", console: "Gaming Consoles" },
+                bonus0: "Add 1 more item for 10% discount", bonus1: "🎉 10% Bundle Discount Applied!", cats: { smart: "Smartphones", lap: "Laptops & MacBooks", console: "Gaming Consoles" },
                 items: {
-                    diag: "Full Diagnostics", screen_i: "iPhone Screen Replacement", batt: "Battery Replacement",
-                    clean_l: "Dust Cleaning + Thermal Paste", screen_m: "MacBook Screen Repair", keyb: "Keyboard Replacement",
-                    clean_c: "PS5 / Xbox Cleaning", hdmi: "HDMI Port Replacement", drift: "DualSense Drift Repair"
+                    diag: "Full Device Diagnostics", screen_i: "iPhone Screen Replacement", batt: "High-Capacity Battery Swap",
+                    clean_l: "Laptop Dust Cleaning + Thermal Paste", screen_m: "MacBook Display Repair", keyb: "Keyboard Module Replacement",
+                    clean_c: "PS5 / Xbox Deep Cleaning", hdmi: "4K HDMI Port Replacement", drift: "DualSense Stick Drift Repair"
                 }
             },
             ru: {
                 sub: "Премиум Ремонт Техники • Эйндховен", totalLabel: "Предварительный итог:", button: "Оформить Заказ", free: "Бесплатно", from: "от",
-                cats: { smart: "Смартфоны", lap: "Ноутбуки и Макбуки", console: "Игровые Консоли" },
+                bonus0: "Добавьте еще 1 услугу для скидки 10%", bonus1: "🎉 Комплексная скидка 10% активирована!", cats: { smart: "Смартфоны", lap: "Ноутбуки и Макбуки", console: "Игровые Консоли" },
                 items: {
-                    diag: "Полная Диагностика", screen_i: "Замена экрана iPhone", batt: "Замена аккумулятора",
-                    clean_l: "Чистка от пыли + термопаста", screen_m: "Ремонт экрана MacBook", keyb: "Замена клавиатуры",
-                    clean_c: "Чистка PS5 / Xbox", hdmi: "Замена разъема HDMI", drift: "Ремонт дрифта стика DualSense"
+                    diag: "Полная Диагностика Устройства", screen_i: "Замена оригинального экрана iPhone", batt: "Замена изношенного аккумулятора",
+                    clean_l: "Чистка ноутбука + жидкий термоинтерфейс", screen_m: "Ремонт матрицы дисплея MacBook", keyb: "Замена клавиатурного блока",
+                    clean_c: "Глубокая чистка PS5 / Xbox от пыли", hdmi: "Замена разъема HDMI 2.1 (4K)", drift: "Устранение дрифта стика DualSense"
                 }
             },
             uk: {
                 sub: "Преміум Ремонт Техніки • Ейндховен", totalLabel: "Попередній підсумок:", button: "Оформити Замовлення", free: "Безкоштовно", from: "від",
-                cats: { smart: "Смартфони", lap: "Ноутбуки та Макбуки", console: "Ігрові Консолі" },
+                bonus0: "Додайте ще 1 послугу для знижки 10%", bonus1: "🎉 Комплексна знижка 10% активована!", cats: { smart: "Смартфони", lap: "Ноутбуки та Макбуки", console: "Ігрові Консолі" },
                 items: {
-                    diag: "Повна Діагностика", screen_i: "Заміна екрану iPhone", batt: "Заміна акумулятора",
-                    clean_l: "Чистка від пилу + термопаста", screen_m: "Ремонт екрану MacBook", keyb: "Заміна клавіатури",
-                    clean_c: "Чистка PS5 / Xbox", hdmi: "Заміна роз'єму HDMI", drift: "Ремонт дрифту стіка DualSense"
+                    diag: "Повна Діагностика Пристрою", screen_i: "Заміна оригінального екрану iPhone", batt: "Заміна акумулятора (Original)",
+                    clean_l: "Чистка ноутбука від пилу + термопаста", screen_m: "Ремонт матриці дисплея MacBook", keyb: "Заміна клавіатурного блоку",
+                    clean_c: "Глибока чистка PS5 / Xbox від пилу", hdmi: "Заміна роз'єму HDMI 2.1 (4K)", drift: "Усунення дрифту стіка DualSense"
                 }
             },
             nl: {
                 sub: "Premium Reparatieservice • Eindhoven", totalLabel: "Geschatte Totaal:", button: "Bestellen", free: "Gratis", from: "vanaf",
-                cats: { smart: "Smartphones", lap: "Laptops & MacBooks", console: "Spelcomputers" },
+                bonus0: "Voeg nog 1 item toe voor 10% korting", bonus1: "🎉 10% Pakketkorting Toegepast!", cats: { smart: "Smartphones", lap: "Laptops & MacBooks", console: "Spelcomputers" },
                 items: {
-                    diag: "Volledige Diagnose", screen_i: "iPhone Scherm Vervangen", batt: "Batterij Vervangen",
-                    clean_l: "Stofvrij Maken + Koelpasta", screen_m: "MacBook Scherm Reparatie", keyb: "Toetsenbord Vervangen",
-                    clean_c: "PS5 / Xbox Reiniging", hdmi: "HDMI Poort Vervangen", drift: "DualSense Drift Reparatie"
+                    diag: "Volledige Apparaatdiagnose", screen_i: "iPhone Scherm Vervangen", batt: "Accu Vervangen (High-Capacity)",
+                    clean_l: "Laptop Stofvrij Maken + Koelpasta", screen_m: "MacBook Scherm Reparatie", keyb: "Toetsenbord Module Vervangen",
+                    clean_c: "PS5 / Xbox Diepe Reiniging", hdmi: "HDMI Poort Vervangen (4K)", drift: "DualSense Drift Reparatie"
                 }
             }
         };
 
-        // Структура цен
         const menuStructure = [
             { cat: 'smart', nameKey: 'diag', price: 0, isFree: true },
             { cat: 'smart', nameKey: 'screen_i', price: 55 },
@@ -181,21 +267,23 @@
             { cat: 'console', nameKey: 'drift', price: 25 }
         ];
 
-        function setLanguage(lang) {
+        function setLanguage(lang, index) {
             currentLang = lang;
             
-            // Подсветка активного флага
+            // Сдвигаем ползунок слайдера
+            document.getElementById('lang-slider').style.transform = `translateX(${index * 100}%)`;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${lang}`).classList.add('active');
 
-            // Перевод статичных заголовков
+            // Тексты
             const t = translations[lang];
             document.getElementById('sub-title').innerText = t.sub;
             document.getElementById('total-label').innerText = t.totalLabel;
             document.getElementById('order-btn').innerText = t.button;
 
-            // Отрисовка списка с новым языком без потери галочек
             renderMenu();
+            updateWidgets();
+            tg.HapticFeedback.impactOccurred('light');
         }
 
         function renderMenu() {
@@ -203,11 +291,7 @@
             area.innerHTML = '';
             const t = translations[currentLang];
 
-            const categories = {
-                smart: t.cats.smart,
-                lap: t.cats.lap,
-                console: t.cats.console
-            };
+            const categories = { smart: t.cats.smart, lap: t.cats.lap, console: t.cats.console };
 
             for (const [catKey, catName] of Object.entries(categories)) {
                 const catTitle = document.createElement('div');
@@ -218,24 +302,18 @@
                 const listDiv = document.createElement('div');
                 listDiv.className = 'service-list';
 
-                const items = menuStructure.filter(i => i.cat === catKey);
-                items.forEach(item => {
-                    const itemName = t.items[item.nameKey];
-                    const priceText = item.isFree ? t.free : `${t.from} €${item.price}`;
-                    const isSelected = selectedServices.includes(t.items[item.nameKey]) || selectedServices.some(s => Object.values(translations).some(langObj => langObj.items[item.nameKey] === s));
-
+                menuStructure.filter(i => i.cat === catKey).forEach(item => {
+                    const isSelected = selectedKeys.includes(item.nameKey);
                     const itemDiv = document.createElement('div');
                     itemDiv.className = `service-item ${isSelected ? 'selected' : ''}`;
-                    
-                    // Хак для сохранения связи выбранных элементов
-                    itemDiv.onclick = (e) => toggleService(itemDiv, item.price, item.nameKey);
+                    itemDiv.onclick = () => toggleService(itemDiv, item);
 
                     itemDiv.innerHTML = `
                         <div class="service-info">
-                            <span class="service-name">${itemName}</span>
-                            <span class="service-price">${priceText}</span>
+                            <span class="service-name">${t.items[item.nameKey]}</span>
+                            <span class="service-price">${item.isFree ? t.free : `${t.from} €${item.price}`}</span>
                         </div>
-                        <input type="checkbox" ${isSelected ? 'checked' : ''}>
+                        <div class="checkbox-custom"></div>
                     `;
                     listDiv.appendChild(itemDiv);
                 });
@@ -243,53 +321,83 @@
             }
         }
 
-        function toggleService(element, price, nameKey) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            checkbox.checked = !checkbox.checked;
-
-            // Сохраняем имя строго на выбранном текущем языке для чека
-            const serviceName = translations[currentLang].items[nameKey];
-
-            if (checkbox.checked) {
-                total += price;
-                selectedServices.push(serviceName);
-                element.classList.add('selected');
+        function toggleService(element, item) {
+            const index = selectedKeys.indexOf(item.nameKey);
+            if (index === -1) {
+                selectedKeys.push(item.nameKey);
+                total += item.price;
             } else {
-                total -= price;
-                // Удаляем элемент, учитывая возможные переводы
-                selectedServices = selectedServices.filter(s => s !== serviceName && !Object.values(translations).some(l => l.items[nameKey] === s));
-                element.classList.remove('selected');
+                selectedKeys.splice(index, 1);
+                total -= item.price;
             }
 
-            document.getElementById('total-display').innerText = `€${total}`;
-            document.getElementById('order-btn').disabled = selectedServices.length === 0;
-            tg.HapticFeedback.impactOccurred('light');
+            renderMenu();
+            updateWidgets();
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function updateWidgets() {
+            const count = selectedKeys.length;
+            const fill = document.getElementById('progress-fill');
+            const statusText = document.getElementById('bonus-status');
+            const percentText = document.getElementById('bonus-percent');
+            const oldPriceText = document.getElementById('old-price');
+            const t = translations[currentLang];
+
+            // Логика калькуляции скидок
+            if (count === 0) {
+                fill.style.width = '0%';
+                fill.style.backgroundColor = 'var(--primary-orange)';
+                statusText.innerText = t.bonus0;
+                percentText.innerText = '0%';
+                finalPrice = 0;
+                oldPriceText.style.display = 'none';
+            } else if (count === 1) {
+                fill.style.width = '50%';
+                fill.style.backgroundColor = 'var(--primary-orange)';
+                statusText.innerText = t.bonus0;
+                percentText.innerText = '50%';
+                finalPrice = total;
+                oldPriceText.style.display = 'none';
+            } else {
+                // Включаем скидку 10% если выбрано 2 или более услуг
+                fill.style.width = '100%';
+                fill.style.backgroundColor = 'var(--neon-green)';
+                statusText.innerText = t.bonus1;
+                percentText.innerText = '100%';
+                finalPrice = Math.round(total * 0.9);
+                oldPriceText.innerText = `€${total}`;
+                oldPriceText.style.display = total > 0 ? 'inline' : 'none';
+            }
+
+            document.getElementById('total-display').innerText = `€${finalPrice}`;
+            document.getElementById('order-btn').disabled = count === 0;
         }
 
         function sendOrder() {
+            // Переводим массив ключей в конечные названия на выбранном языке для отправки в бот
+            const finalServices = selectedKeys.map(key => translations[currentLang].items[key]);
             tg.sendData(JSON.stringify({
-                services: selectedServices,
-                totalPrice: total,
+                services: finalServices,
+                totalPrice: finalPrice,
                 lang: currentLang
             }));
             tg.close();
         }
 
-        // Запуск анимации заднего фона
-        const bgIcons = ['🍏', '🤖', '🎮', '💻', '⚙️', '△', '◯', '✖', '□'];
+        // Запуск анимации плавающего заднего фона
+        const bgIcons = ['🍏', '🤖', '🎮', '💻', '⚙️', '▲', '◯', '✖', '□'];
         const bgContainer = document.getElementById('bg-animation');
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 18; i++) {
             const icon = document.createElement('div');
             icon.className = 'floating-icon';
             icon.innerText = bgIcons[Math.floor(Math.random() * bgIcons.length)];
             icon.style.left = Math.random() * 100 + '%';
             icon.style.animationDelay = Math.random() * 8 + 's';
-            icon.style.fontSize = Math.random() * 12 + 15 + 'px';
             bgContainer.appendChild(icon);
         }
 
-        // Инициализация английского языка по дефолту
-        setLanguage('en');
+        setLanguage('en', 0);
     </script>
 </body>
 </html>
