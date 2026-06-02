@@ -4,103 +4,217 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FixSquad Eindhoven</title>
+    <!-- Подключаем официальный скрипт Телеграма для Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #0f0f11;
+            --card-bg: #1c1c1e;
+            --primary-orange: #ff9500;
+            --primary-orange-hover: #cc7600;
+            --text-color: #ffffff;
+            --text-muted: #a4a4aa;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1c1c1e;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 15px;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
         }
+
+        /* --- АНИМАЦИЯ ФОНА (ЛЕТАЮЩИЕ ИКОНКИ) --- */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* Чтобы значки не мешали кликать по кнопкам */
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            bottom: -50px;
+            font-size: 24px;
+            opacity: 0.08; /* Делаем их едва заметными, чтобы не отвлекали */
+            animation: floatUp 8s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.12;
+            }
+            90% {
+                opacity: 0.12;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* --- ИНТЕРФЕЙС САЙТА --- */
         .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #2c2c2e;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2; /* Сайт поверх летающих иконок */
+            max-width: 480px;
+            margin: 10px auto 0 auto;
+            background: var(--card-bg);
+            padding: 25px 20px;
+            border-radius: 24px;
+            border: 1px solid #2c2c2e;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
-        h1 { color: #0a84ff; text-align: center; margin-bottom: 5px; }
-        .city { text-align: center; color: #8e8e93; margin-top: 0; margin-bottom: 25px; }
+
+        h1 { 
+            color: var(--primary-orange); 
+            text-align: center; 
+            margin-top: 0;
+            margin-bottom: 5px; 
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .city { 
+            text-align: center; 
+            color: var(--text-muted); 
+            margin-top: 0; 
+            margin-bottom: 30px; 
+            font-size: 0.95em;
+            font-weight: 500;
+        }
         
         .service-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #3a3a3c;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            background: #262629;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
             cursor: pointer;
-            transition: background 0.2s;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
         }
-        .service-item:hover { background: #48484a; }
-        .service-info { display: flex; flex-direction: column; }
-        .service-name { font-weight: bold; }
-        .service-price { color: #30d158; font-size: 0.9em; margin-top: 4px; }
         
-        /* Стилизация чекбоксов */
+        .service-item:hover { 
+            background: #2c2c30;
+            border-color: rgba(255, 149, 0, 0.3);
+        }
+        
+        .service-info { 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .service-name { 
+            font-weight: 600; 
+            font-size: 1.05em;
+        }
+        
+        .service-price { 
+            color: var(--primary-orange); 
+            font-size: 0.9em; 
+            margin-top: 5px; 
+            font-weight: bold;
+        }
+        
+        /* Кастомный чекбокс */
         input[type="checkbox"] {
             width: 22px;
             height: 22px;
-            accent-color: #0a84ff;
+            accent-color: var(--primary-orange);
             cursor: pointer;
         }
 
+        /* Выделение выбранного пункта */
+        .service-item.selected {
+            border-color: var(--primary-orange);
+            background: rgba(255, 149, 0, 0.06);
+        }
+
         .total-box {
-            margin-top: 25px;
-            padding: 15px;
-            background: #1c1c1e;
-            border-radius: 12px;
+            margin-top: 30px;
+            padding: 18px;
+            background: #0f0f11;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.2em;
+            font-size: 1.15em;
             font-weight: bold;
+            border: 1px solid #2c2c2e;
         }
-        .total-price { color: #30d158; }
+        
+        .total-price { 
+            color: var(--primary-orange); 
+            font-size: 1.3em;
+        }
 
         .btn-order {
             display: block;
             width: 100%;
-            background: #0a84ff;
-            color: white;
+            background: var(--primary-orange);
+            color: #000000;
             border: none;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 16px;
             font-size: 1.1em;
-            font-weight: bold;
+            font-weight: 800;
             margin-top: 20px;
             cursor: pointer;
             text-align: center;
-            transition: background 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
         }
+        
+        .btn-order:hover:not(:disabled) {
+            background: var(--primary-orange-hover);
+            transform: translateY(-1px);
+        }
+
         .btn-order:disabled {
-            background: #48484a;
-            color: #8e8e93;
+            background: #3a3a3c;
+            color: #727277;
             cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
+    <!-- Задний фон с летающими логотипами -->
+    <div class="background-animation" id="bg-animation"></div>
+
     <div class="container">
         <h1>FixSquad</h1>
-        <p class="city">Интерактивный заказ ремонта • Eindhoven</p>
+        <p class="city">🛠️ Интерактивный ремонт • Eindhoven</p>
 
+        <!-- Список услуг -->
         <div id="services">
             <div class="service-item" onclick="toggleService(this, 0)">
                 <div class="service-info">
                     <span class="service-name">🔍 Полная диагностика</span>
-                    <span class="service-price">€0 (Бесплатно)</span>
+                    <span class="service-price">Бесплатно</span>
                 </div>
                 <input type="checkbox" value="0" id="service-0">
             </div>
 
             <div class="service-item" onclick="toggleService(this, 50)">
                 <div class="service-info">
-                    <span class="service-name">📱 Замена экрана (iPhone/Samsung)</span>
+                    <span class="service-name">📱 Замена дисплея (iOS / Android)</span>
                     <span class="service-price">от €50</span>
                 </div>
                 <input type="checkbox" value="50" id="service-50">
@@ -108,7 +222,7 @@
 
             <div class="service-item" onclick="toggleService(this, 30)">
                 <div class="service-info">
-                    <span class="service-name">🔋 Замена аккумулятора</span>
+                    <span class="service-name">🔋 Новая батарея (Оригинал/Копия)</span>
                     <span class="service-price">от €30</span>
                 </div>
                 <input type="checkbox" value="30" id="service-30">
@@ -116,13 +230,14 @@
 
             <div class="service-item" onclick="toggleService(this, 40)">
                 <div class="service-info">
-                    <span class="service-name">💧 Восстановление после воды</span>
+                    <span class="service-name">💧 Восстановление после залития</span>
                     <span class="service-price">от €40</span>
                 </div>
                 <input type="checkbox" value="40" id="service-40">
             </div>
         </div>
 
+        <!-- Итого -->
         <div class="total-box">
             <span>Предварительный итог:</span>
             <span class="total-price" id="total-display">€0</span>
@@ -132,18 +247,31 @@
     </div>
 
     <script>
-        // Инициализируем Telegram Web App
+        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем окно на максимум
+        tg.expand();
 
         let total = 0;
         let selectedServices = [];
+
+        // Скрипт для создания случайных летающих иконок Apple и Android
+        const icons = ['🍏', '🤖', '🍎', '📱', '💻', '⚙️'];
+        const bgContainer = document.getElementById('bg-animation');
+        
+        for (let i = 0; i < 15; i++) {
+            const icon = document.createElement('div');
+            icon.className = 'floating-icon';
+            icon.innerText = icons[Math.floor(Math.random() * icons.length)];
+            icon.style.left = Math.random() * 100 + '%';
+            icon.style.animationDelay = Math.random() * 7 + 's';
+            icon.style.fontSize = Math.random() * (30 - 18) + 18 + 'px';
+            bgContainer.appendChild(icon);
+        }
 
         function toggleService(element, price) {
             const checkbox = element.querySelector('input[type="checkbox"]');
             const serviceName = element.querySelector('.service-name').innerText;
             
-            // Если кликнули по блоку, а не по самому чекбоксу, меняем его состояние вручную
             if (event.target.type !== 'checkbox') {
                 checkbox.checked = !checkbox.checked;
             }
@@ -151,29 +279,26 @@
             if (checkbox.checked) {
                 total += price;
                 selectedServices.push(serviceName);
+                element.classList.add('selected');
             } else {
                 total -= price;
                 selectedServices = selectedServices.filter(item => item !== serviceName);
+                element.classList.remove('selected');
             }
 
-            // Обновляем ценник на экране
             document.getElementById('total-display').innerText = `€${total}`;
             
-            // Активируем кнопку, если выбрана хотя бы одна услуга
             const btn = document.getElementById('order-btn');
             btn.disabled = selectedServices.length === 0;
         }
 
         function sendOrder() {
-            // Формируем данные для отправки в бота
             const data = {
                 services: selectedServices,
                 totalPrice: total
             };
-
-            // Отправляем данные в Telegram (конвертируем в JSON строку)
             tg.sendData(JSON.stringify(data));
-            tg.close(); // Закрываем веб-приложение после отправки
+            tg.close();
         }
     </script>
 </body>
