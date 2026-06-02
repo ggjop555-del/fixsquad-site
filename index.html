@@ -3,76 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixSquad Service Eindhoven</title>
+    <title>FixSquad Eindhoven</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #1c1c1e;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
-            text-align: center;
+            padding: 15px;
         }
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             background: #2c2c2e;
-            padding: 30px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        h1 {
-            color: #0a84ff;
-            margin-bottom: 5px;
-        }
-        .city {
-            color: #8e8e93;
-            font-size: 1.1em;
-            margin-top: 0;
-            margin-bottom: 30px;
-        }
-        .price-list {
-            text-align: left;
+        h1 { color: #0a84ff; text-align: center; margin-bottom: 5px; }
+        .city { text-align: center; color: #8e8e93; margin-top: 0; margin-bottom: 25px; }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background: #3a3a3c;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .price-item {
+        .service-item:hover { background: #48484a; }
+        .service-info { display: flex; flex-direction: column; }
+        .service-name { font-weight: bold; }
+        .service-price { color: #30d158; font-size: 0.9em; margin-top: 4px; }
+        
+        /* Стилизация чекбоксов */
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #0a84ff;
+            cursor: pointer;
+        }
+
+        .total-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #1c1c1e;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #48484a;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
         }
-        .price-item:last-child {
-            border-bottom: none;
-        }
-        .price-name { font-weight: 500; }
-        .price-value { color: #30d158; font-weight: bold; }
-        
-        .btn {
+        .total-price { color: #30d158; }
+
+        .btn-order {
             display: block;
+            width: 100%;
             background: #0a84ff;
-            color: #white;
-            text-decoration: none;
+            color: white;
+            border: none;
             padding: 15px;
             border-radius: 12px;
             font-size: 1.1em;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 20px;
+            cursor: pointer;
+            text-align: center;
             transition: background 0.2s;
         }
-        .btn:hover {
-            background: #007aff;
-        }
-        .btn-tg {
-            background: #248bcf;
-        }
-        .contacts {
-            margin-top: 30px;
-            color: #aeaea3;
-            font-size: 0.9em;
-            line-height: 1.6;
+        .btn-order:disabled {
+            background: #48484a;
+            color: #8e8e93;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -80,36 +87,94 @@
 
     <div class="container">
         <h1>FixSquad</h1>
-        <p class="city">Ремонт техники в Eindhoven</p>
+        <p class="city">Интерактивный заказ ремонта • Eindhoven</p>
 
-        <div class="price-list">
-            <div class="price-item">
-                <span class="price-name">🔍 Диагностика</span>
-                <span class="price-value">Бесплатно</span>
+        <div id="services">
+            <div class="service-item" onclick="toggleService(this, 0)">
+                <div class="service-info">
+                    <span class="service-name">🔍 Полная диагностика</span>
+                    <span class="service-price">€0 (Бесплатно)</span>
+                </div>
+                <input type="checkbox" value="0" id="service-0">
             </div>
-            <div class="price-item">
-                <span class="price-name">📱 Замена экрана (iPhone/Samsung)</span>
-                <span class="price-value">от €50</span>
+
+            <div class="service-item" onclick="toggleService(this, 50)">
+                <div class="service-info">
+                    <span class="service-name">📱 Замена экрана (iPhone/Samsung)</span>
+                    <span class="service-price">от €50</span>
+                </div>
+                <input type="checkbox" value="50" id="service-50">
             </div>
-            <div class="price-item">
-                <span class="price-name">🔋 Замена аккумулятора</span>
-                <span class="price-value">от €30</span>
+
+            <div class="service-item" onclick="toggleService(this, 30)">
+                <div class="service-info">
+                    <span class="service-name">🔋 Замена аккумулятора</span>
+                    <span class="service-price">от €30</span>
+                </div>
+                <input type="checkbox" value="30" id="service-30">
             </div>
-            <div class="price-item">
-                <span class="price-name">💧 Чистка после влаги</span>
-                <span class="price-value">от €40</span>
+
+            <div class="service-item" onclick="toggleService(this, 40)">
+                <div class="service-info">
+                    <span class="service-name">💧 Восстановление после воды</span>
+                    <span class="service-price">от €40</span>
+                </div>
+                <input type="checkbox" value="40" id="service-40">
             </div>
         </div>
 
-        <a href="https://t.me/florida294" class="btn btn-tg">💬 Написать в Telegram</a>
-        <a href="tel:+31620814177" class="btn">📞 Позвонить мастеру</a>
-
-        <div class="contacts">
-            <p>📍 Eindhoven, Netherlands<br>
-            📧 vitaliikorin72@gmail.com<br>
-            ⏰ Пн-Пт: 09:00 - 18:00</p>
+        <div class="total-box">
+            <span>Предварительный итог:</span>
+            <span class="total-price" id="total-display">€0</span>
         </div>
+
+        <button class="btn-order" id="order-btn" disabled onclick="sendOrder()">Оформить заказ</button>
     </div>
 
+    <script>
+        // Инициализируем Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем окно на максимум
+
+        let total = 0;
+        let selectedServices = [];
+
+        function toggleService(element, price) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            const serviceName = element.querySelector('.service-name').innerText;
+            
+            // Если кликнули по блоку, а не по самому чекбоксу, меняем его состояние вручную
+            if (event.target.type !== 'checkbox') {
+                checkbox.checked = !checkbox.checked;
+            }
+
+            if (checkbox.checked) {
+                total += price;
+                selectedServices.push(serviceName);
+            } else {
+                total -= price;
+                selectedServices = selectedServices.filter(item => item !== serviceName);
+            }
+
+            // Обновляем ценник на экране
+            document.getElementById('total-display').innerText = `€${total}`;
+            
+            // Активируем кнопку, если выбрана хотя бы одна услуга
+            const btn = document.getElementById('order-btn');
+            btn.disabled = selectedServices.length === 0;
+        }
+
+        function sendOrder() {
+            // Формируем данные для отправки в бота
+            const data = {
+                services: selectedServices,
+                totalPrice: total
+            };
+
+            // Отправляем данные в Telegram (конвертируем в JSON строку)
+            tg.sendData(JSON.stringify(data));
+            tg.close(); // Закрываем веб-приложение после отправки
+        }
+    </script>
 </body>
 </html>
