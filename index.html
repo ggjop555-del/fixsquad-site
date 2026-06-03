@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixSquad CyberPro</title>
+    <title>FixSquad CyberPro Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: #121214;
-            --card-bg-selected: rgba(255, 149, 0, 0.07);
+            --bg-color: #030303;
+            --card-bg: rgba(18, 18, 20, 0.7);
+            --card-bg-selected: rgba(255, 149, 0, 0.12);
             --primary-orange: #ff9500;
             --neon-glow: #ff9500;
             --neon-green: #30d158;
             --text-color: #ffffff;
             --text-muted: #6e6e73;
-            --border-color: #1c1c1e;
+            --border-color: rgba(44, 44, 46, 0.5);
         }
 
         body {
@@ -24,34 +24,58 @@
             color: var(--text-color);
             margin: 0;
             padding: 15px;
-            padding-bottom: 130px;
+            padding-bottom: 140px;
             overflow-x: hidden;
             -webkit-user-select: none;
             user-select: none;
         }
 
+        /* --- ЭКРАН ЗАГРУЗКИ (SPLASH SCREEN) --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: opacity 0.5s ease;
+        }
+        .splash-logo {
+            font-size: 2.2em; font-weight: 900; letter-spacing: 5px; color: #fff;
+            animation: pulseGlow 1.5s infinite alternate; text-transform: uppercase;
+        }
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 10px rgba(255,149,0,0.2); }
+            100% { text-shadow: 0 0 25px rgba(255,149,0,0.8); color: var(--primary-orange); }
+        }
+
+        /* --- СЛЕДЯЩАЯ ПОДСВЕТКА ЗА ПАЛЬЦЕМ (GLOW FOLLOW) --- */
+        #cursor-glow {
+            position: fixed; top: 0; left: 0; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255, 149, 0, 0.08) 0%, rgba(255, 149, 0, 0) 70%);
+            border-radius: 50%; pointer-events: none; z-index: 1;
+            transform: translate(-50%, -50%); transition: opacity 0.3s ease; opacity: 0;
+        }
+
         /* Живой фон */
         .background-animation {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none; overflow: hidden;
+            z-index: 0; pointer-events: none; overflow: hidden;
         }
         .floating-icon {
-            position: absolute; bottom: -50px; opacity: 0.05;
+            position: absolute; bottom: -50px; opacity: 0.04;
             animation: floatUp 12s linear infinite; font-size: 20px;
         }
         @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
-            30% { opacity: 0.12; }
-            80% { opacity: 0.12; }
+            30% { opacity: 0.1; }
+            80% { opacity: 0.1; }
             100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
         .container { position: relative; z-index: 2; max-width: 480px; margin: 0 auto; }
 
-        /* Кастомный iOS-style переключатель языков */
+        /* iOS слайдер выбора языков */
         .lang-container {
-            display: flex; background: #16161a; padding: 4px; border-radius: 14px;
+            display: flex; background: rgba(22, 22, 26, 0.6); padding: 4px; border-radius: 14px;
             border: 1px solid var(--border-color); margin-bottom: 20px; position: relative;
+            backdrop-filter: blur(10px);
         }
         .lang-btn {
             flex: 1; text-align: center; padding: 8px 0; font-size: 1.1em; cursor: pointer;
@@ -59,108 +83,111 @@
         }
         .lang-btn.active { filter: grayscale(0%); transform: scale(1.1); font-weight: bold; }
         
-        /* Ползунок выбора языка */
         .lang-slider {
             position: absolute; top: 4px; bottom: 4px; width: calc(25% - 4px);
             background: var(--primary-orange); border-radius: 11px; z-index: 1;
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px rgba(255, 149, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 149, 0, 0.5);
         }
 
         header { text-align: center; margin-bottom: 20px; }
         h1 { 
-            font-size: 1.9em; font-weight: 900; letter-spacing: 3px; margin: 0;
+            font-size: 2em; font-weight: 900; letter-spacing: 4px; margin: 0;
             background: linear-gradient(135deg, #ffffff 30%, #ff9500 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .subtitle { color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; margin-top: 6px; letter-spacing: 1px; }
+        .subtitle { color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; margin-top: 6px; letter-spacing: 1.5px; }
 
-        /* Виджет геймификации / Полоса прогресса */
+        /* Живой виджет прогресса */
         .bonus-widget {
-            background: var(--card-bg); border-radius: 16px; padding: 12px 15px;
-            border: 1px solid var(--border-color); margin-bottom: 20px;
+            background: var(--card-bg); border-radius: 16px; padding: 14px 15px;
+            border: 1px solid var(--border-color); margin-bottom: 20px; backdrop-filter: blur(10px);
         }
         .bonus-text { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
         .progress-bar-bg { background: #1c1c1e; height: 6px; border-radius: 10px; overflow: hidden; }
         .progress-bar-fill { 
             width: 0%; height: 100%; background: var(--primary-orange); 
-            transition: width 0.4s ease, background-color 0.4s ease; 
-            box-shadow: 0 0 8px var(--neon-glow);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 0 10px var(--neon-glow);
         }
 
-        /* Стили Категорий и Списков */
+        /* Категории */
         .category-title {
             font-size: 0.75em; color: var(--primary-orange); margin: 25px 0 10px 5px;
             font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
-            display: flex; align-items: center;
+            display: flex; align-items: center; text-shadow: 0 0 10px rgba(255,149,0,0.2);
         }
-        .category-title::after { content: ""; flex: 1; height: 1px; background: #1c1c1e; margin-left: 12px; }
+        .category-title::after { content: ""; flex: 1; height: 1px; background: rgba(44, 44, 46, 0.3); margin-left: 12px; }
 
-        .service-list { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
+        .service-list { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); backdrop-filter: blur(10px); }
         
         .service-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 16px; border-bottom: 1px solid var(--border-color);
-            cursor: pointer; transition: all 0.25s ease; position: relative;
+            padding: 15px 16px; border-bottom: 1px solid var(--border-color);
+            cursor: pointer; transition: all 0.2s ease; position: relative;
         }
         .service-item:last-child { border-bottom: none; }
         
         .service-info { display: flex; flex-direction: column; z-index: 2; }
-        .service-name { font-size: 0.95em; font-weight: 600; transition: color 0.2s; }
-        .service-price { color: var(--text-muted); font-size: 0.8em; margin-top: 3px; font-weight: 500; transition: color 0.2s; }
+        .service-name { font-size: 0.95em; font-weight: 600; }
+        .service-price { color: var(--text-muted); font-size: 0.8em; margin-top: 4px; font-weight: 500; transition: color 0.2s; }
         
-        /* Эффект Неонового Выделения при клике */
+        /* Кибер-выделение */
         .service-item.selected { 
             background: var(--card-bg-selected); 
-            box-shadow: inset 0 0 15px rgba(255, 149, 0, 0.03);
         }
         .service-item.selected::before {
             content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--primary-orange);
-            box-shadow: 0 0 10px var(--neon-glow);
+            box-shadow: 0 0 12px var(--neon-glow);
         }
-        .service-item.selected .service-name { color: #fff; }
-        .service-item.selected .service-price { color: var(--primary-orange); }
+        .service-item.selected .service-price { color: var(--primary-orange); text-shadow: 0 0 8px rgba(255,149,0,0.3); }
 
-        /* Скрываем дефолтный чекбокс, делаем кастомную неоновую точку */
+        /* Кастомный чекбокс-вспышка */
         .checkbox-custom {
             width: 16px; height: 16px; border: 2px solid #2c2c2e; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2;
+            display: flex; align-items: center; justify-content: center; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2;
         }
         .service-item.selected .checkbox-custom {
             border-color: var(--primary-orange); background: var(--primary-orange);
-            box-shadow: 0 0 10px var(--neon-glow);
+            box-shadow: 0 0 12px var(--neon-glow); transform: scale(1.1);
         }
 
         /* Премиальная нижняя панель (Matte Glass) */
         .bottom-panel {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(10, 10, 12, 0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-top: 1px solid var(--border-color); padding: 15px 20px 25px 20px; box-sizing: border-box; z-index: 10;
         }
         .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .total-label { font-size: 0.85em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .total-container { text-align: right; }
-        .old-price { color: #555; text-decoration: line-through; font-size: 0.85em; margin-right: 5px; display: none; }
+        .old-price { color: #444; text-decoration: line-through; font-size: 0.85em; margin-right: 6px; display: none; }
         .total-amount { color: #fff; font-weight: 800; font-size: 1.4em; }
 
-        /* Пульсирующая неоновая кнопка */
+        /* Постоянно Дышащая Пульсирующая Кнопка */
         .btn-order {
             width: 100%; background: linear-gradient(135deg, #ff9500 0%, #ff5e00 100%); color: #000;
             border: none; padding: 15px; border-radius: 14px; font-weight: 800; font-size: 1em;
             text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2);
+            animation: buttonBreathe 2s infinite alternate ease-in-out;
         }
-        .btn-order:not(:disabled):span { display: inline-block; animation: pulse 2s infinite; }
-        .btn-order:disabled { background: #1c1c1e; color: #444; box-shadow: none; cursor: not-allowed; }
+        .btn-order:disabled { background: #1c1c1e; color: #444; box-shadow: none; cursor: not-allowed; animation: none; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        @keyframes buttonBreathe {
+            0% { box-shadow: 0 4px 12px rgba(255, 149, 0, 0.2); transform: scale(1); }
+            100% { box-shadow: 0 4px 25px rgba(255, 149, 0, 0.6); transform: scale(1.01); }
         }
     </style>
 </head>
 <body>
+
+    <!-- Экран загрузки -->
+    <div id="splash-screen">
+        <div class="splash-logo">FixSquad Pro</div>
+    </div>
+
+    <!-- Мягкий неоновый след за пальцем -->
+    <div id="cursor-glow"></div>
 
     <div class="background-animation" id="bg-animation"></div>
 
@@ -190,11 +217,10 @@
             </div>
         </div>
 
-        <!-- Контент наполняется динамически -->
         <div id="content-area"></div>
     </div>
 
-    <!-- Размытая нижняя панель -->
+    <!-- Панель управления заказом -->
     <div class="bottom-panel">
         <div class="total-row">
             <span class="total-label" id="total-label">Total Estimate:</span>
@@ -209,12 +235,34 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#050505');
+        tg.setHeaderColor('#030303');
+
+        // Скрываем Splash Screen после полной готовности
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 600);
+        });
+
+        // Реализация эффекта Glow Follow (работает и на тапах, и на мышке)
+        const glow = document.getElementById('cursor-glow');
+        const updateGlow = (e) => {
+            glow.style.opacity = '1';
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            glow.style.left = `${x}px`;
+            glow.style.top = `${y}px`;
+        };
+        window.addEventListener('mousemove', updateGlow);
+        window.addEventListener('touchmove', updateGlow);
+        window.addEventListener('touchend', () => glow.style.opacity = '0');
 
         let currentLang = 'en';
         let total = 0;
         let finalPrice = 0;
-        let selectedKeys = []; // Храним ключи выбранных услуг, чтобы языки переключались на лету
+        let selectedKeys = [];
 
         const translations = {
             en: {
@@ -241,7 +289,7 @@
                 items: {
                     diag: "Повна Діагностика Пристрою", screen_i: "Заміна оригінального екрану iPhone", batt: "Заміна акумулятора (Original)",
                     clean_l: "Чистка ноутбука від пилу + термопаста", screen_m: "Ремонт матриці дисплея MacBook", keyb: "Заміна клавіатурного блоку",
-                    clean_c: "Глибока чистка PS5 / Xbox від пилу", hdmi: "Заміна роз'єму HDMI 2.1 (4K)", drift: "Усунення дрифту стіка DualSense"
+                    clean_c: "Глубока чистка PS5 / Xbox від пилу", hdmi: "Заміна роз'єму HDMI 2.1 (4K)", drift: "Умунення дрифту стіка DualSense"
                 }
             },
             nl: {
@@ -269,13 +317,10 @@
 
         function setLanguage(lang, index) {
             currentLang = lang;
-            
-            // Сдвигаем ползунок слайдера
             document.getElementById('lang-slider').style.transform = `translateX(${index * 100}%)`;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${lang}`).classList.add('active');
 
-            // Тексты
             const t = translations[lang];
             document.getElementById('sub-title').innerText = t.sub;
             document.getElementById('total-label').innerText = t.totalLabel;
@@ -290,7 +335,6 @@
             const area = document.getElementById('content-area');
             area.innerHTML = '';
             const t = translations[currentLang];
-
             const categories = { smart: t.cats.smart, lap: t.cats.lap, console: t.cats.console };
 
             for (const [catKey, catName] of Object.entries(categories)) {
@@ -344,7 +388,6 @@
             const oldPriceText = document.getElementById('old-price');
             const t = translations[currentLang];
 
-            // Логика калькуляции скидок
             if (count === 0) {
                 fill.style.width = '0%';
                 fill.style.backgroundColor = 'var(--primary-orange)';
@@ -360,7 +403,6 @@
                 finalPrice = total;
                 oldPriceText.style.display = 'none';
             } else {
-                // Включаем скидку 10% если выбрано 2 или более услуг
                 fill.style.width = '100%';
                 fill.style.backgroundColor = 'var(--neon-green)';
                 statusText.innerText = t.bonus1;
@@ -375,7 +417,6 @@
         }
 
         function sendOrder() {
-            // Переводим массив ключей в конечные названия на выбранном языке для отправки в бот
             const finalServices = selectedKeys.map(key => translations[currentLang].items[key]);
             tg.sendData(JSON.stringify({
                 services: finalServices,
@@ -385,10 +426,10 @@
             tg.close();
         }
 
-        // Запуск анимации плавающего заднего фона
+        // Фон
         const bgIcons = ['🍏', '🤖', '🎮', '💻', '⚙️', '▲', '◯', '✖', '□'];
         const bgContainer = document.getElementById('bg-animation');
-        for (let i = 0; i < 18; i++) {
+        for (let i = 0; i < 15; i++) {
             const icon = document.createElement('div');
             icon.className = 'floating-icon';
             icon.innerText = bgIcons[Math.floor(Math.random() * bgIcons.length)];
