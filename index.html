@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FixSquad CyberPro Ultimate Edition</title>
+    <title>FixSquad CyberPro Hub</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: rgba(15, 15, 25, 0.75);
-            --card-bg-selected: rgba(255, 110, 0, 0.12);
+            --bg-color: #050508;
+            --card-bg: rgba(18, 18, 28, 0.8);
             --primary-orange: #ff6c00;
             --neon-glow: #ff4800;
             --neon-green: #00ff66;
             --text-color: #ffffff;
             --text-muted: #8a8a93;
-            --border-color: rgba(255, 110, 0, 0.2);
+            --border-color: rgba(255, 110, 0, 0.15);
         }
 
         body {
@@ -24,61 +23,94 @@
             color: var(--text-color);
             margin: 0;
             padding: 15px;
-            padding-bottom: 140px;
+            padding-bottom: 40px;
             overflow-x: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        /* КИБЕР-РАДАР И ХЕДЕР */
+        /* ТОП-БАР С ЯЗЫКАМИ И КИБЕР-СТАТУСОМ */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            background: rgba(0, 255, 102, 0.08);
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.4; box-shadow: 0 0 2px var(--neon-green); }
+            to { opacity: 1; box-shadow: 0 0 8px var(--neon-green); }
+        }
+
+        .lang-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--primary-orange);
+            color: #fff;
+            box-shadow: 0 0 8px var(--neon-glow);
+        }
+
+        /* ХЕДЕР */
         .header-container {
             text-align: center;
             margin-bottom: 25px;
-            position: relative;
-            padding: 20px 10px;
-            background: linear-gradient(180deg, rgba(255,108,0,0.05) 0%, transparent 100%);
+            padding: 15px 10px;
+            background: linear-gradient(180deg, rgba(255,108,0,0.04) 0%, transparent 100%);
             border-radius: 16px;
-            border: 1px solid rgba(255,108,0,0.1);
-        }
-
-        .radar-box {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 15px;
-            position: relative;
-            border-radius: 50%;
-            border: 1px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-            overflow: hidden;
-        }
-
-        .radar-box::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: conic-gradient(from 0deg, transparent 70%, rgba(0, 255, 102, 0.4) 100%);
-            border-radius: 50%;
-            animation: radar-sweep 2s linear infinite;
-        }
-
-        @keyframes radar-sweep {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            border: 1px solid rgba(255,108,0,0.08);
         }
 
         .brand-title {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin: 0;
             background: linear-gradient(90deg, #fff, var(--primary-orange));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(255, 108, 0, 0.3);
         }
 
         .brand-subtitle {
@@ -88,386 +120,239 @@
             letter-spacing: 1px;
         }
 
-        /* КАТЕГОРИИ И УСЛУГИ */
-        .category-title {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--primary-orange);
-            margin: 20px 0 10px 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* КАТЕГОРИИ */
+        .category-block {
+            margin-bottom: 25px;
         }
 
-        .services-grid {
+        .category-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--primary-orange);
+            margin-bottom: 12px;
+            padding-left: 4px;
+            text-shadow: 0 0 10px rgba(255, 108, 0, 0.2);
+        }
+
+        .services-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .service-item {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 14px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.25s ease;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-        }
-
-        .service-item:active {
-            transform: scale(0.98);
-        }
-
-        .service-item.selected {
-            border-color: var(--primary-orange);
-            background-color: var(--card-bg-selected);
-            box-shadow: inset 0 0 15px rgba(255, 108, 0, 0.1), 0 0 12px rgba(255, 108, 0, 0.15);
-        }
-
-        .service-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            max-width: 75%;
         }
 
         .service-name {
             font-size: 15px;
             font-weight: 600;
+            color: #fff;
         }
 
         .service-price {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--primary-orange);
-        }
-
-        .checkbox-container {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .service-item.selected .checkbox-container {
-            background-color: var(--primary-orange);
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 8px var(--neon-glow);
-        }
-
-        .checkbox-container::after {
-            content: '✓';
-            color: #fff;
-            font-size: 12px;
-            font-weight: bold;
-            display: none;
-        }
-
-        .service-item.selected .checkbox-container::after {
-            display: block;
-        }
-
-        /* ОПЦИЯ СКОРОСТИ */
-        .speed-section {
-            margin-top: 25px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .speed-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .speed-title {
             font-size: 15px;
-            font-weight: 600;
-        }
-
-        .speed-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Переключатель (Toggle) */
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #2c2c2e;
-            transition: .3s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary-orange);
-            box-shadow: 0 0 10px var(--neon-glow);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        /* ОРАНЖЕВАЯ НИЖНЯЯ КНОПКА ЗАКАЗА */
-        .footer-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.9) 20%, #000 100%);
-            padding: 20px 15px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            z-index: 999;
-        }
-
-        .price-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
-
-        .total-label {
-            font-size: 14px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .total-amount {
-            font-size: 24px;
-            font-weight: 800;
+            font-weight: 700;
             color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+            background: rgba(255, 108, 0, 0.1);
+            border: 1px solid rgba(255, 108, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 8px;
+            min-width: 45px;
+            text-align: center;
         }
 
-        .checkout-btn {
+        .price-free {
+            color: var(--neon-green);
+            background: rgba(0, 255, 102, 0.1);
+            border-color: rgba(0, 255, 102, 0.3);
+        }
+
+        /* КНОПКА СВЯЗИ */
+        .contact-box {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .contact-btn {
             width: 100%;
             background: linear-gradient(90deg, #ff8400, #ff4800);
             border: none;
             border-radius: 14px;
             color: white;
             padding: 16px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
-            box-shadow: 0 4px 20px rgba(255, 72, 0, 0.4);
+            box-shadow: 0 4px 20px rgba(255, 72, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
             transition: all 0.2s ease;
         }
 
-        .checkout-btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 10px rgba(255, 72, 0, 0.2);
+        .contact-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(255, 72, 0, 0.15);
         }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <div class="radar-box"></div>
-        <h1 class="brand-title">FixSquad Pro</h1>
-        <div class="brand-subtitle">Eindhoven Cyber-Repair Hub</div>
+    <div class="top-bar">
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span id="statusText">Masters free • Fast Intake</span>
+        </div>
+        <div class="lang-selector">
+            <button class="lang-btn active" onclick="setLang('en', event)">EN</button>
+            <button class="lang-btn" onclick="setLang('ru', event)">RU</button>
+        </div>
     </div>
 
-    <div class="category-title">🍏 Smartphones</div>
-    <div class="services-grid">
-        <div class="service-item" onclick="toggleService(this, 'diag', 0)">
-            <div class="service-info">
-                <span class="service-name">Full Device Diagnostics</span>
-                <span class="service-price">Free</span>
+    <div class="header-container">
+        <h1 class="brand-title">FixSquad Pro</h1>
+        <div class="brand-subtitle" id="hubSubtitle">Eindhoven Premium Repair Hub</div>
+    </div>
+
+    <div class="category-block">
+        <div class="category-title" id="catSmart">🍏 Smartphones</div>
+        <div class="services-list">
+            <div class="service-item">
+                <span class="service-name" id="s1">Full Device Diagnostics</span>
+                <span class="service-price price-free" id="pFree">Free</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'screen_i', 55)">
-            <div class="service-info">
-                <span class="service-name">iPhone Screen Replacement</span>
+            <div class="service-item">
+                <span class="service-name" id="s2">iPhone Screen Replacement</span>
                 <span class="service-price">€55</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'batt', 35)">
-            <div class="service-info">
-                <span class="service-name">High-Capacity Battery Swap</span>
+            <div class="service-item">
+                <span class="service-name" id="s3">High-Capacity Battery Swap</span>
                 <span class="service-price">€35</span>
             </div>
-            <div class="checkbox-container"></div>
         </div>
     </div>
 
-    <div class="category-title">💻 Laptops & MacBooks</div>
-    <div class="services-grid">
-        <div class="service-item" onclick="toggleService(this, 'clean_l', 40)">
-            <div class="service-info">
-                <span class="service-name">Laptop Dust Cleaning + Thermal Paste</span>
+    <div class="category-block">
+        <div class="category-title" id="catLap">💻 Laptops & MacBooks</div>
+        <div class="services-list">
+            <div class="service-item">
+                <span class="service-name" id="l1">Laptop Dust Cleaning + Thermal Paste</span>
                 <span class="service-price">€40</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'screen_m', 90)">
-            <div class="service-info">
-                <span class="service-name">MacBook Display Repair</span>
+            <div class="service-item">
+                <span class="service-name" id="l2">MacBook Display Repair</span>
                 <span class="service-price">€90</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'keyb', 50)">
-            <div class="service-info">
-                <span class="service-name">Keyboard Module Replacement</span>
+            <div class="service-item">
+                <span class="service-name" id="l3">Keyboard Module Replacement</span>
                 <span class="service-price">€50</span>
             </div>
-            <div class="checkbox-container"></div>
         </div>
     </div>
 
-    <div class="category-title">🎮 Gaming Consoles</div>
-    <div class="services-grid">
-        <div class="service-item" onclick="toggleService(this, 'clean_c', 45)">
-            <div class="service-info">
-                <span class="service-name">PS5 / Xbox Deep Cleaning</span>
+    <div class="category-block">
+        <div class="category-title" id="catConsole">🎮 Gaming Consoles</div>
+        <div class="services-list">
+            <div class="service-item">
+                <span class="service-name" id="c1">PS5 / Xbox Deep Cleaning</span>
                 <span class="service-price">€45</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'hdmi', 60)">
-            <div class="service-info">
-                <span class="service-name">4K HDMI Port Replacement</span>
+            <div class="service-item">
+                <span class="service-name" id="c2">4K HDMI Port Replacement</span>
                 <span class="service-price">€60</span>
             </div>
-            <div class="checkbox-container"></div>
-        </div>
-        <div class="service-item" onclick="toggleService(this, 'drift', 25)">
-            <div class="service-info">
-                <span class="service-name">DualSense Stick Drift Repair</span>
+            <div class="service-item">
+                <span class="service-name" id="c3">DualSense Stick Drift Repair</span>
                 <span class="service-price">€25</span>
             </div>
-            <div class="checkbox-container"></div>
         </div>
     </div>
 
-    <div class="speed-section">
-        <div class="speed-info">
-            <span class="speed-title">⚡ Express Repair</span>
-            <span class="speed-desc">Done in 2 hours (+€20)</span>
-        </div>
-        <label class="toggle-switch">
-            <input type="checkbox" id="expressToggle" onchange="calculateTotal()">
-            <span class="slider"></span>
-        </label>
-    </div>
-
-    <div class="footer-panel">
-        <div class="price-summary">
-            <span class="total-label">Total Estimate</span>
-            <span class="total-amount" id="totalPrice">€0</span>
-        </div>
-        <button class="checkout-btn" onclick="sendOrder()">Place Order 🚀</button>
+    <div class="contact-box">
+        <a href="https://t.me/florida294" class="contact-btn" id="btnContact">
+            💬 Contact Master Directly 🚀
+        </a>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp API
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Растягиваем на весь экран смартфона
+        tg.expand();
         tg.ready();
 
-        let selectedServices = {};
-
-        function toggleService(element, id, price) {
-            element.classList.toggle('selected');
-            if (selectedServices[id]) {
-                delete selectedServices[id];
-            } else {
-                selectedServices[id] = price;
+        const dict = {
+            en: {
+                status: "Masters free • Fast Intake",
+                subtitle: "Eindhoven Premium Repair Hub",
+                smart: "🍏 Smartphones",
+                lap: "💻 Laptops & MacBooks",
+                console: "🎮 Gaming Consoles",
+                free: "Free",
+                contact: "💬 Contact Master Directly 🚀",
+                s1: "Full Device Diagnostics",
+                s2: "iPhone Screen Replacement",
+                s3: "High-Capacity Battery Swap",
+                l1: "Laptop Dust Cleaning + Thermal Paste",
+                l2: "MacBook Display Repair",
+                l3: "Keyboard Module Replacement",
+                c1: "PS5 / Xbox Deep Cleaning",
+                c2: "4K HDMI Port Replacement",
+                c3: "DualSense Stick Drift Repair"
+            },
+            ru: {
+                status: "Мастера свободны • Быстрый прием",
+                subtitle: "Премиум Сервис-Хаб Эйндховен",
+                smart: "🍏 Смартфоны",
+                lap: "💻 Ноутбуки и Макбуки",
+                console: "🎮 Игровые Консоли",
+                free: "Бесплатно",
+                contact: "💬 Связаться с Мастером 🚀",
+                s1: "Полная диагностика устройства",
+                s2: "Замена экрана iPhone",
+                s3: "Замена аккумулятора (усиленный)",
+                l1: "Чистка от пыли + термопаста",
+                l2: "Ремонт дисплея MacBook",
+                l3: "Замена клавиатурного модуля",
+                c1: "Глубокая чистка PS5 / Xbox",
+                c2: "Замена порта 4K HDMI",
+                c3: "Ремонт дрифта стиков DualSense"
             }
-            calculateTotal();
-        }
+        };
 
-        function calculateTotal() {
-            let baseTotal = 0;
-            let count = 0;
+        function setLang(lang, event) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
 
-            for (let id in selectedServices) {
-                baseTotal += selectedServices[id];
-                count++;
-            }
-
-            // Скидка 10% если выбрано 2 или более услуг
-            if (count >= 2) {
-                baseTotal = Math.round(baseTotal * 0.9);
-            }
-
-            // Добавка за экспресс
-            const isExpress = document.getElementById('expressToggle').checked;
-            if (isExpress) {
-                baseTotal += 20;
-            }
-
-            document.getElementById('totalPrice').innerText = `€${baseTotal}`;
-        }
-
-        function sendOrder() {
-            let count = Object.keys(selectedServices).length;
-            if (count === 0) {
-                alert('Please select at least one service! 🛠️');
-                return;
-            }
-
-            const isExpress = document.getElementById('expressToggle').checked;
-            const finalPrice = document.getElementById('totalPrice').innerText;
-
-            // Собираем данные для отправки обратно в ТГ
-            const orderData = {
-                services_count: count,
-                express: isExpress ? "Yes" : "No",
-                total: finalPrice
-            };
-
-            // Отправляем данные боту и закрываем приложение
-            tg.sendData(JSON.stringify(orderData));
-            tg.close();
+            document.getElementById('statusText').innerText = dict[lang].status;
+            document.getElementById('hubSubtitle').innerText = dict[lang].subtitle;
+            document.getElementById('catSmart').innerText = dict[lang].smart;
+            document.getElementById('catLap').innerText = dict[lang].lap;
+            document.getElementById('catConsole').innerText = dict[lang].console;
+            document.getElementById('pFree').innerText = dict[lang].free;
+            document.getElementById('btnContact').innerHTML = dict[lang].contact;
+            
+            document.getElementById('s1').innerText = dict[lang].s1;
+            document.getElementById('s2').innerText = dict[lang].s2;
+            document.getElementById('s3').innerText = dict[lang].s3;
+            document.getElementById('l1').innerText = dict[lang].l1;
+            document.getElementById('l2').innerText = dict[lang].l2;
+            document.getElementById('l3').innerText = dict[lang].l3;
+            document.getElementById('c1').innerText = dict[lang].c1;
+            document.getElementById('c2').innerText = dict[lang].c2;
+            document.getElementById('c3').innerText = dict[lang].c3;
         }
     </script>
 </body>
